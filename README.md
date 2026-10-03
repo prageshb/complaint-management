@@ -12,11 +12,12 @@ A simple desktop-based Complaint Management System built using Java Swing and JD
 ## ✨ Features
 ### User Portal
 - **Submit Complaints**: Users can easily submit a grievance by providing a title and description.
-- **Immediate Feedback**: Users receive a success confirmation upon submission.
+- **Complaint Tracking**: Upon submission, an 8-character unique alphanumeric Tracking ID is generated. Users can easily copy it to their clipboard with a single click.
+- **Track Progress**: A dedicated button on the main page allows users to enter their Tracking ID and instantly see the real-time status (Pending/Resolved) of their grievance.
 
 ### Admin Dashboard
 - **Authentication Layer**: Secure login for administrators.
-- **View Complaints**: A tabular view (`JTable`) displaying all submitted grievances and their current status (Pending/Resolved).
+- **View Complaints**: A tabular view (`JTable`) displaying all submitted grievances, including their unique Tracking IDs and current status.
 - **Mark as Resolved**: Admins can change the status of pending complaints to 'Resolved'.
 - **Delete Records**: Admins can permanently delete a complaint from the system.
 - **Export Log**: Admins can export a daily summary log of resolved complaints to a local text file (`.txt`).
@@ -48,6 +49,7 @@ USE complaint_db;
 -- Table to store user submitted grievances
 CREATE TABLE IF NOT EXISTS complaints (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    tracking_id VARCHAR(50) UNIQUE,
     title VARCHAR(100) NOT NULL,
     description TEXT NOT NULL,
     status VARCHAR(20) DEFAULT 'Pending'
