@@ -2,6 +2,8 @@ package com.complaint;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 
@@ -29,6 +31,7 @@ public class UserForm extends JFrame {
         JPanel titlePanel = new JPanel(new BorderLayout(5, 5));
         titlePanel.add(new JLabel("Title:"), BorderLayout.NORTH);
         titleField = new JTextField();
+        titleField.setMargin(new Insets(2, 5, 2, 5));
         titlePanel.add(titleField, BorderLayout.CENTER);
         formPanel.add(titlePanel, BorderLayout.NORTH);
 
@@ -65,8 +68,25 @@ public class UserForm extends JFrame {
         }
 
         try {
-            dao.addComplaint(title, description);
-            JOptionPane.showMessageDialog(this, "Complaint submitted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            String trackingId = dao.addComplaint(title, description);
+            
+            Object[] options = {"Copy Tracking ID", "Close"};
+            int choice = JOptionPane.showOptionDialog(this,
+                    "Complaint submitted successfully!\nYour Tracking ID is: " + trackingId,
+                    "Success",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.INFORMATION_MESSAGE,
+                    null,
+                    options,
+                    options[0]);
+                    
+            if (choice == JOptionPane.YES_OPTION) {
+                StringSelection stringSelection = new StringSelection(trackingId);
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                clipboard.setContents(stringSelection, null);
+                JOptionPane.showMessageDialog(this, "Tracking ID copied to clipboard!", "Copied", JOptionPane.INFORMATION_MESSAGE);
+            }
+            
             titleField.setText("");
             descriptionArea.setText("");
         } catch (SQLException ex) {

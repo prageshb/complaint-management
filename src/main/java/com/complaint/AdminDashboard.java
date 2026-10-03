@@ -19,7 +19,7 @@ public class AdminDashboard extends JFrame {
     public AdminDashboard() {
         dao = new ComplaintDAO();
         setTitle("Admin Dashboard - Grievances");
-        setSize(700, 450);
+        setSize(800, 450);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -30,7 +30,7 @@ public class AdminDashboard extends JFrame {
         titleLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
         panel.add(titleLabel, BorderLayout.NORTH);
 
-        tableModel = new DefaultTableModel(new String[]{"ID", "Title", "Description", "Status"}, 0) {
+        tableModel = new DefaultTableModel(new String[]{"ID", "Tracking ID", "Title", "Description", "Status"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; 
@@ -38,10 +38,11 @@ public class AdminDashboard extends JFrame {
         };
         table = new JTable(tableModel);
         
-        table.getColumnModel().getColumn(0).setPreferredWidth(50);
-        table.getColumnModel().getColumn(1).setPreferredWidth(150);
-        table.getColumnModel().getColumn(2).setPreferredWidth(400);
-        table.getColumnModel().getColumn(3).setPreferredWidth(100);
+        table.getColumnModel().getColumn(0).setPreferredWidth(40);
+        table.getColumnModel().getColumn(1).setPreferredWidth(100);
+        table.getColumnModel().getColumn(2).setPreferredWidth(150);
+        table.getColumnModel().getColumn(3).setPreferredWidth(350);
+        table.getColumnModel().getColumn(4).setPreferredWidth(100);
 
         JScrollPane scrollPane = new JScrollPane(table);
         panel.add(scrollPane, BorderLayout.CENTER);
@@ -78,7 +79,7 @@ public class AdminDashboard extends JFrame {
             complaintsList = dao.getAllComplaints();
             tableModel.setRowCount(0);
             for (Complaint c : complaintsList) {
-                tableModel.addRow(new Object[]{c.getId(), c.getTitle(), c.getDescription(), c.getStatus()});
+                tableModel.addRow(new Object[]{c.getId(), c.getTrackingId(), c.getTitle(), c.getDescription(), c.getStatus()});
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Database connection error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -89,7 +90,7 @@ public class AdminDashboard extends JFrame {
         int selectedRow = table.getSelectedRow();
         if (selectedRow >= 0) {
             int id = (int) tableModel.getValueAt(selectedRow, 0);
-            String status = (String) tableModel.getValueAt(selectedRow, 3);
+            String status = (String) tableModel.getValueAt(selectedRow, 4);
             if ("Resolved".equalsIgnoreCase(status)) {
                 JOptionPane.showMessageDialog(this, "Complaint is already resolved.");
                 return;
@@ -138,7 +139,7 @@ public class AdminDashboard extends JFrame {
             int count = 0;
             for (Complaint c : complaintsList) {
                 if ("Resolved".equalsIgnoreCase(c.getStatus())) {
-                    writer.write("ID: " + c.getId() + " | Title: " + c.getTitle());
+                    writer.write("ID: " + c.getId() + " | Tracking ID: " + c.getTrackingId() + " | Title: " + c.getTitle());
                     writer.newLine();
                     writer.write("Description: " + c.getDescription());
                     writer.newLine();

@@ -3,6 +3,7 @@ USE complaint_db;
 
 CREATE TABLE IF NOT EXISTS complaints (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    tracking_id VARCHAR(50) UNIQUE,
     title VARCHAR(100) NOT NULL,
     description TEXT NOT NULL,
     status VARCHAR(20) DEFAULT 'Pending'

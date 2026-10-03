@@ -5,14 +5,17 @@ import java.util.Vector;
 
 public class ComplaintDAO {
 
-    public void addComplaint(String title, String description) throws SQLException {
-        String sql = "INSERT INTO complaints (title, description, status) VALUES (?, ?, 'Pending')";
+    public String addComplaint(String title, String description) throws SQLException {
+        String trackingId = java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        String sql = "INSERT INTO complaints (tracking_id, title, description, status) VALUES (?, ?, ?, 'Pending')";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, title);
-            stmt.setString(2, description);
+            stmt.setString(1, trackingId);
+            stmt.setString(2, title);
+            stmt.setString(3, description);
             stmt.executeUpdate();
         }
+        return trackingId;
     }
 
     public Vector<Complaint> getAllComplaints() throws SQLException {
@@ -25,6 +28,7 @@ public class ComplaintDAO {
             while (rs.next()) {
                 complaints.add(new Complaint(
                     rs.getInt("id"),
+                    rs.getString("tracking_id"),
                     rs.getString("title"),
                     rs.getString("description"),
                     rs.getString("status")
@@ -62,5 +66,19 @@ public class ComplaintDAO {
                 return rs.next(); // true if admin exists
             }
         }
+    }
+
+    public String getComplaintStatus(String trackingId) throws SQLException {
+        String sql = "SELECT status FROM complaints WHERE tracking_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, trackingId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("status");
+                }
+            }
+        }
+        return null;
     }
 }
